@@ -37,15 +37,98 @@ Board::~Board()
 
 }
 
+bool
+Board::isLegalKing(char i_piece, Location &i_src, Location &i_dst) {
+	if (isLegalRook(i_piece, i_src, i_dst) == true || isLegalBishop(i_piece, i_src, i_dst) == true) {
+		if (abs(i_src.x - i_dst.x) != 1 || abs(i_src.y - i_dst.y) != 1) {
+			return false;
+		}
+		else 
+		{
+			return true;
+		}
+	}
+	else 
+	{
+		return false;
+	}
+}
+
+
+bool 
+Board::isLegalQueen(char i_piece, Location &i_src, Location &i_dst) {
+	if (isLegalRook(i_piece, i_src, i_dst) == true || isLegalBishop(i_piece, i_src, i_dst) == true) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool
+Board::isLegalRook(char i_piece, Location &i_src, Location &i_dst) {
+	if (abs(i_src.x - i_dst.x) > 0 && i_src.y - i_dst.y == 0) {
+		return true;
+	}
+	else if (abs(i_src.y - i_dst.y) > 0 && i_src.x - i_src.y == 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+
+	
+}
+
+
+bool
+Board::isLegalKnight(char i_piece, Location &i_src, Location &i_dst) 
+{
+	//if (isKnight(i_piece)) 
+	//{
+		if (abs(i_dst.x - i_src.x) == 2 && abs(i_dst.y - i_src.y) == 1) 
+		{
+			return true;
+		}
+		else if (abs(i_dst.y - i_src.y) == 2 && abs(i_dst.x - i_src.x) == 1) {
+			return true;
+		}
+		else 
+		{
+			return false;
+		}
+	//}
+	//else {
+		//return false;
+	//}
+}
+
+
+bool
+Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
+
+	//int diff;
+		
+	if ((i_dst.x - i_src.x) / (i_dst.y - i_src.y) != 1) {
+		return false;
+	}
+	else {
+		return true;
+	}	
+
+
+}
+
 
 bool 
 Board::isLegal(char i_piece,  Location &i_src, Location &i_dst) {
 	
-	int diff;
+	
 
 
 	if (isPawn(i_piece)) 
 	{
+		int diff;
 		if (isWhite(i_piece))
 		{
 
@@ -113,6 +196,23 @@ Board::isLegal(char i_piece,  Location &i_src, Location &i_dst) {
 
 
 	}
+	else {
+		if (isBishop(i_piece)) {
+			return isLegalBishop(i_piece, i_src, i_dst);
+		}
+		if (isKnight(i_piece)) {
+			return isLegalKnight(i_piece, i_src, i_dst);
+		}
+		if (isRook(i_piece)) {
+			return isLegalRook(i_piece, i_src, i_dst);
+		}
+		if (isQueen(i_piece)) {
+			return isLegalQueen(i_piece, i_src, i_dst);
+		}
+		if (isKing(i_piece)) {
+			return isLegalKing(i_piece, i_src, i_dst);
+		}
+	}
 
 	return false;
 
@@ -174,14 +274,10 @@ Board::move(const std::string &i_move)
 		dst.y = i_move[1] -  '1';
 		if (search(mIsWhite ? 'p' : 'P', src, dst))
 		{
-
 			mBoard[dst.x] [dst.y] = mBoard[src.x][src.y];
 			mBoard[src.x][src.y] = ' ';
 
-
 			mIsWhite = !mIsWhite;
-
-
 		}
 		else {
 			cout << "\n\nYou made an illegal move, or this program sucks.\n\n";
@@ -189,7 +285,21 @@ Board::move(const std::string &i_move)
 	}
 	else if (i_move.length() == 3) 
 	{
-		xMoveTo = toGrid(i_move[1]);
+		Location dst, src;
+		dst.x = toGrid(i_move[1]);
+		dst.y = i_move[2] - '1';
+
+		if (search(mIsWhite ? tolower(i_move[0]) : toupper(i_move[0]), src, dst)) {
+			mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+			mBoard[src.x][src.y] = ' ';
+
+			mIsWhite = !mIsWhite;
+		}
+		else {
+			cout << "\n\nYou made an illegal move, or this program sucks.\n\n";
+		}
+
+
 	}
 	else if(i_move.length() == 5)
 	{
@@ -216,7 +326,9 @@ Board::move(const std::string &i_move)
 
 
 				mIsWhite = !mIsWhite;
-				return true;
+			}
+			else {
+				cout << "\n\nYou made an illegal move, or this program sucks.\n\n";
 			}
 		}
 				
