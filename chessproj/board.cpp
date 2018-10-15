@@ -70,7 +70,7 @@ Board::isLegalRook(char i_piece, Location &i_src, Location &i_dst) {
 	if (abs(i_src.x - i_dst.x) > 0 && i_src.y - i_dst.y == 0) {
 		return true;
 	}
-	else if (abs(i_src.y - i_dst.y) > 0 && i_src.x - i_src.y == 0) {
+	else if (abs(i_src.y - i_dst.y) > 0 && i_src.x - i_dst.x == 0) {
 		return true;
 	}
 	else {
