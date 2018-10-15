@@ -40,7 +40,7 @@ Board::~Board()
 bool
 Board::isLegalKing(char i_piece, Location &i_src, Location &i_dst) {
 	if (isLegalRook(i_piece, i_src, i_dst) == true || isLegalBishop(i_piece, i_src, i_dst) == true) {
-		if (abs(i_src.x - i_dst.x) != 1 || abs(i_src.y - i_dst.y) != 1) {
+		if (!(0 <= abs(i_src.x - i_dst.x) < 2) || !(0 <= abs(i_src.y - i_dst.y) < 2)) {
 			return false;
 		}
 		else 
@@ -57,7 +57,10 @@ Board::isLegalKing(char i_piece, Location &i_src, Location &i_dst) {
 
 bool 
 Board::isLegalQueen(char i_piece, Location &i_src, Location &i_dst) {
-	if (isLegalRook(i_piece, i_src, i_dst) == true || isLegalBishop(i_piece, i_src, i_dst) == true) {
+	if (isLegalRook(i_piece, i_src, i_dst)) {
+		return true;
+	}
+	else if (isLegalBishop(i_piece, i_src, i_dst)) {
 		return true;
 	}
 	else {
@@ -109,7 +112,7 @@ Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
 
 	//int diff;
 		
-	if ((i_dst.x - i_src.x) / (i_dst.y - i_src.y) != 1) {
+	if (abs((i_dst.x - i_src.x) / (i_dst.y - i_src.y)) != 1) {
 		return false;
 	}
 	else {
