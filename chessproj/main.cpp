@@ -16,7 +16,7 @@ main(int argc, char *argv)
 	string move;
 
 
-	while (true)
+	while (board->playing() == true)
 	{
 		if (board->isWhiteMove())
 			cout << "\n\n***White*** Please make a move\nMove: ";
@@ -30,8 +30,4 @@ main(int argc, char *argv)
 		board->print();
 
 	}
-
-
-
-
 }

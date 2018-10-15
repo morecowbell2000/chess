@@ -18,7 +18,7 @@ public:
 	bool move(const std::string &i_move);
 	bool   isWhiteMove() { return mIsWhite; }
 	void	print();
-
+	bool playing() { return true; }
 
 
 private:
