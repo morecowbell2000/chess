@@ -39,47 +39,67 @@ Board::~Board()
 
 bool
 Board::isLegalKing(char i_piece, Location &i_src, Location &i_dst) {
-	if (isLegalRook(i_piece, i_src, i_dst) == true || isLegalBishop(i_piece, i_src, i_dst) == true) {
-		if (!(0 <= abs(i_src.x - i_dst.x) < 2) || !(0 <= abs(i_src.y - i_dst.y) < 2)) {
-			return false;
-		}
-		else 
-		{
-			return true;
-		}
+	//doesn't allow landing on own pieces.
+	if ((mIsWhite && islower(mBoard[i_dst.x][i_dst.y])) || (!mIsWhite && isupper(mBoard[i_dst.x][i_dst.y]))) {
+		return false;
 	}
 	else 
 	{
-		return false;
+		if (isLegalRook(i_piece, i_src, i_dst) == true || isLegalBishop(i_piece, i_src, i_dst) == true) {
+			if (!(0 <= abs(i_src.x - i_dst.x) < 2) || !(0 <= abs(i_src.y - i_dst.y) < 2)) {
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return false;
+		}
 	}
 }
 
 
 bool 
 Board::isLegalQueen(char i_piece, Location &i_src, Location &i_dst) {
-	if (isLegalRook(i_piece, i_src, i_dst)) {
-		return true;
-	}
-	else if (isLegalBishop(i_piece, i_src, i_dst)) {
-		return true;
-	}
-	else {
+	//doesn't allow landing on own pieces.
+	if ((mIsWhite && islower(mBoard[i_dst.x][i_dst.y])) || (!mIsWhite && isupper(mBoard[i_dst.x][i_dst.y]))) {
 		return false;
+	}
+	else
+	{
+		if (isLegalRook(i_piece, i_src, i_dst)) {
+			return true;
+		}
+		else if (isLegalBishop(i_piece, i_src, i_dst)) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }
 
 bool
 Board::isLegalRook(char i_piece, Location &i_src, Location &i_dst) {
-	if (abs(i_src.x - i_dst.x) > 0 && i_src.y - i_dst.y == 0) {
-		return true;
-	}
-	else if (abs(i_src.y - i_dst.y) > 0 && i_src.x - i_dst.x == 0) {
-		return true;
-	}
-	else {
+	//doesn't allow landing on own pieces.
+	if ((mIsWhite && islower(mBoard[i_dst.x][i_dst.y])) || (!mIsWhite && isupper(mBoard[i_dst.x][i_dst.y]))) {
 		return false;
 	}
-
+	else
+	{
+		if (abs(i_src.x - i_dst.x) > 0 && i_src.y - i_dst.y == 0) {
+			return true;
+		}
+		else if (abs(i_src.y - i_dst.y) > 0 && i_src.x - i_dst.x == 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	
 }
 
@@ -89,17 +109,24 @@ Board::isLegalKnight(char i_piece, Location &i_src, Location &i_dst)
 {
 	//if (isKnight(i_piece)) 
 	//{
-		if (abs(i_dst.x - i_src.x) == 2 && abs(i_dst.y - i_src.y) == 1) 
+	//doesn't allow landing on own pieces.
+	if ((mIsWhite && islower(mBoard[i_dst.x][i_dst.y])) || (!mIsWhite && isupper(mBoard[i_dst.x][i_dst.y]))) {
+		return false;
+	}
+	else
+	{
+		if (abs(i_dst.x - i_src.x) == 2 && abs(i_dst.y - i_src.y) == 1)
 		{
 			return true;
 		}
 		else if (abs(i_dst.y - i_src.y) == 2 && abs(i_dst.x - i_src.x) == 1) {
 			return true;
 		}
-		else 
+		else
 		{
 			return false;
 		}
+	}
 	//}
 	//else {
 		//return false;
@@ -111,13 +138,19 @@ bool
 Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
 
 	//int diff;
-		
-	if (abs((i_dst.x - i_src.x) / (i_dst.y - i_src.y)) != 1) {
+	//doesn't allow landing on own pieces.
+	if ((mIsWhite && islower(mBoard[i_dst.x][i_dst.y])) || (!mIsWhite && isupper(mBoard[i_dst.x][i_dst.y]))) {
 		return false;
 	}
-	else {
-		return true;
-	}	
+	else
+	{
+		if (abs((i_dst.x - i_src.x) / (i_dst.y - i_src.y)) != 1) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
 
 
 }
@@ -143,28 +176,24 @@ Board::isLegal(char i_piece,  Location &i_src, Location &i_dst) {
 				diff = i_dst.y - i_src.y;
 				if (diff > 2 || diff <= 0)
 					return false;
-
 				if (mBoard[i_dst.x][i_dst.y] != ' ') {
 					return false;
 				}
-
-
 				if (diff == 2 && i_src.y == 1) {
-					if (mBoard[i_src.x][i_src.y + 1] != ' ') {
+					if (mBoard[i_dst.x][i_dst.y + 1] != ' ') {
 						return false;
 					}
-
 					return true;
 				}
 				if (diff == 1)
 					return true;
 			}
-			else 
+			else if (isBlack(mBoard[i_dst.x][i_dst.y]) ) {
+				//finish this
+			}
 			{
 				return  false;
 			}
-
-
 		}
 		else
 		{
