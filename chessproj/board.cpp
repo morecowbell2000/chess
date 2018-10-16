@@ -90,10 +90,38 @@ Board::isLegalRook(char i_piece, Location &i_src, Location &i_dst) {
 	}
 	else
 	{
+		
 		if (abs(i_src.x - i_dst.x) > 0 && i_src.y - i_dst.y == 0) {
+			for (int z = 1; z < abs(i_src.x - i_dst.x); z++) 
+			{
+				
+				if (i_src.x - i_dst.x < 0) {
+					if (mBoard[i_src.x + (z)][i_src.y] != ' ') {
+						return false;
+					}
+				}
+				else {
+					if (mBoard[i_src.x - (z)][i_src.y] != ' ') {
+						return false;
+					}
+				}
+			}
 			return true;
 		}
 		else if (abs(i_src.y - i_dst.y) > 0 && i_src.x - i_dst.x == 0) {
+			for (int z = 1; z < abs(i_src.y - i_dst.y); z++) {
+				if (i_src.y - i_dst.y > 0) {
+					if (mBoard[i_src.x][i_src.y - (z)] != ' ') {
+						return false;
+					}
+				}
+				else {
+					if (mBoard[i_src.x][i_src.y + (z)] != ' ') {
+						return false;
+					}
+				}
+			}
+			
 			return true;
 		}
 		else {
@@ -150,19 +178,19 @@ Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
 		}
 		else
 		{
-				for (k = 0; k < abs(i_dst.x - i_src.x); k++)
+				for (k = 1; k < abs(i_dst.x - i_src.x); k++)
 				{
 					if (i_src.x - i_dst.x > 0) {
 						//are we going left
 						if (i_src.y - i_dst.y < 0) {
 							//up
-							if (mBoard[i_src.x - (1 + k)][i_src.y + (1 + k)] != ' ') {
+							if (mBoard[i_src.x - (k-1)][i_src.y + (1 + k)] != ' ') {
 								return false;
 							}
 						}
 						else {
 							//or down
-							if (mBoard[i_src.x - (1 + k)][i_src.y - (1 + k)] != ' ') {
+							if (mBoard[i_src.x - (k-1)][i_src.y - (1 + k)] != ' ') {
 								
 								return false;
 							}
@@ -172,14 +200,14 @@ Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
 						//or going right
 						if (i_src.y - i_dst.y < 0) {
 							//up
-							if (mBoard[i_src.x + (1 + k)][i_src.y + (1 + k)] != ' ') {
+							if (mBoard[i_src.x + (k-1)][i_src.y + (1 + k)] != ' ') {
 
 								return false;
 							}
 						}
 						else {
 							//or down
-							if (mBoard[i_src.x + (1 + k)][i_src.y - (1 + k)] != ' ') {
+							if (mBoard[i_src.x + (k-1)][i_src.y - (1 + k)] != ' ') {
 								return false;
 							}
 						}
