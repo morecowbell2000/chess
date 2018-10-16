@@ -137,6 +137,7 @@ Board::isLegalKnight(char i_piece, Location &i_src, Location &i_dst)
 bool
 Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
 
+	int k;
 	//int diff;
 	//doesn't allow landing on own pieces.
 	if ((mIsWhite && islower(mBoard[i_dst.x][i_dst.y])) || (!mIsWhite && isupper(mBoard[i_dst.x][i_dst.y]))) {
@@ -147,7 +148,44 @@ Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
 		if (abs((i_dst.x - i_src.x) / (i_dst.y - i_src.y)) != 1) {
 			return false;
 		}
-		else {
+		else
+		{
+				for (k = 0; k < abs(i_dst.x - i_src.x); k++)
+				{
+					if (i_src.x - i_dst.x > 0) {
+						//are we going left
+						if (i_src.y - i_dst.y < 0) {
+							//up
+							if (mBoard[i_src.x - (1 + k)][i_src.y + (1 + k)] != ' ') {
+								return false;
+							}
+						}
+						else {
+							//or down
+							if (mBoard[i_src.x - (1 + k)][i_src.y - (1 + k)] != ' ') {
+								
+								return false;
+							}
+						}
+					}
+					else {
+						//or going right
+						if (i_src.y - i_dst.y < 0) {
+							//up
+							if (mBoard[i_src.x + (1 + k)][i_src.y + (1 + k)] != ' ') {
+
+								return false;
+							}
+						}
+						else {
+							//or down
+							if (mBoard[i_src.x + (1 + k)][i_src.y - (1 + k)] != ' ') {
+								return false;
+							}
+						}
+					}
+				
+				}
 			return true;
 		}
 	}
@@ -180,7 +218,7 @@ Board::isLegal(char i_piece,  Location &i_src, Location &i_dst) {
 					return false;
 				}
 				if (diff == 2 && i_src.y == 1) {
-					if (mBoard[i_dst.x][i_dst.y + 1] != ' ') {
+					if (mBoard[i_src.x][i_src.y + 1] != ' ') {
 						return false;
 					}
 					return true;
@@ -188,9 +226,17 @@ Board::isLegal(char i_piece,  Location &i_src, Location &i_dst) {
 				if (diff == 1)
 					return true;
 			}
-			else if (isBlack(mBoard[i_dst.x][i_dst.y]) ) {
-				//finish this
-			}
+			else if(isBlack(mBoard[i_dst.x][i_dst.y]) && mBoard[i_dst.x][i_dst.y] != ' ') 
+			{
+				if (abs(i_dst.x - i_src.x) == 1 && i_dst.y - i_src.y == 1) {
+					return true;
+				}
+				else 
+				{
+					return false;
+				}
+			} 
+			else
 			{
 				return  false;
 			}
@@ -220,7 +266,17 @@ Board::isLegal(char i_piece,  Location &i_src, Location &i_dst) {
 					return true;
 
 			}
-			else {
+			else if (isWhite(mBoard[i_dst.x][i_dst.y]) && mBoard[i_dst.x][i_dst.y] != ' ') {
+				if (abs(i_dst.x - i_src.x) == 1 && i_dst.y - i_src.y == -1) {
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
 				return false;
 			}
 		}
