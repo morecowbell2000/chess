@@ -13,7 +13,11 @@ class Board
 public:
 	Board();
 	~Board();
+	bool whiteCheck = false;
+	bool blackCheck = false;
 
+	bool isWhiteCheck() { return whiteCheck; }
+	bool isBlackCheck() { return blackCheck; }
 
 	bool move(const std::string &i_move);
 	bool   isWhiteMove() { return mIsWhite; }
@@ -22,7 +26,8 @@ public:
 
 
 private:
-
+	bool whiteInCheck(int x);
+	bool blackInCheck();
 	
 	int toGrid(char x);
 	bool isLegal(char i_piece, Location &o_src, Location &i_dst);
@@ -42,9 +47,6 @@ private:
 	bool   isRook(char i_piece) { return tolower(i_piece) == 'r'; }
 	bool   isQueen(char i_piece) { return tolower(i_piece) == 'q'; }
 	bool   isKing(char i_piece) { return tolower(i_piece) == 'k'; }
-
-
-
 
 
 

@@ -37,6 +37,44 @@ Board::~Board()
 }
 
 bool
+Board::whiteInCheck(int x) {
+	//make x zero to check for white, make it 1 for black. This redundifies the blackInCheck function but I'm still keeping it
+	char king = 'k';
+	if (x == 1) {
+		king == 'K';
+	}
+
+	Location src;
+	src.x = -1;
+	src.y = -1;
+
+	for (int y = 0; y < 8; y++)
+	{
+		for (int x = 0; x < 8; x++)
+		{
+			if (mBoard[x][y] == king)
+			{
+				src.x = x;
+				src.y = y;
+			}
+		}
+	}
+
+	if (src.x || src.y == -1) {
+		
+	}
+
+
+	return false;
+}
+bool
+Board::blackInCheck() {
+
+	
+	return whiteInCheck(1);
+}
+
+bool
 Board::isLegalKing(char i_piece, Location &i_src, Location &i_dst) {
 	//doesn't allow landing on own pieces.
 	if ((mIsWhite && islower(mBoard[i_dst.x][i_dst.y])) || (!mIsWhite && isupper(mBoard[i_dst.x][i_dst.y]))) {
@@ -383,19 +421,42 @@ Board::move(const std::string &i_move)
 	int xMoveTo;
 	if (i_move.length() == 2) 
 	{
+
 		xMoveTo = toGrid(i_move[0]);
 		Location dst, src;
 		dst.x = xMoveTo;
 		dst.y = i_move[1] -  '1';
-		if (search(mIsWhite ? 'p' : 'P', src, dst))
-		{
-			mBoard[dst.x] [dst.y] = mBoard[src.x][src.y];
-			mBoard[src.x][src.y] = ' ';
+		if (isWhiteCheck() || isBlackCheck()) {
+			if (search(mIsWhite ? 'k' : 'K', src, dst))
+			{
+				if (!whiteInCheck(0) || !blackInCheck()) {
+					mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+					mBoard[src.x][src.y] = ' ';
 
-			mIsWhite = !mIsWhite;
+					mIsWhite = !mIsWhite;
+				}
+				else {
+					cout << "\n\nYou're king is still in check.\n\n";
+				}
+
+			}
+			else {
+				cout << "\n\nYou made an illegal move, or this program sucks.\n\n";
+			}
+		
 		}
-		else {
-			cout << "\n\nYou made an illegal move, or this program sucks.\n\n";
+		else
+		{
+			if (search(mIsWhite ? 'p' : 'P', src, dst))
+			{
+				mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+				mBoard[src.x][src.y] = ' ';
+
+				mIsWhite = !mIsWhite;
+			}
+			else {
+				cout << "\n\nYou made an illegal move, or this program sucks.\n\n";
+			}
 		}
 	}
 	else if (i_move.length() == 3) 
