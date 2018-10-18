@@ -63,9 +63,81 @@ Board::whiteInCheck(int x) {
 		cout << "\n\nThere is a king missing on your board?\n\n";
 	}
 
-	int above = 7 - src.y;
-	int below = abs(src.y - 7);
-	int right;
+	
+
+	for (int i = 0; i < 7; i++) {
+		char piece = mBoard[src.x][i];
+		if (king == 'K' && isWhite(piece) && (isRook(piece) || isQueen(piece))) 
+		{
+			return true;
+		}
+		else if (king == 'k' && isBlack(piece) && (isRook(piece) || isQueen(piece)))
+		{
+			return true;
+		}
+	}
+	
+	for (int i = 0; i < 7; i++) {
+		char piece = mBoard[i][src.y];
+		if (king == 'K' && isWhite(piece) && (isRook(piece) || isQueen(piece)))
+		{
+			return true;
+		}
+		else if (king == 'k' && isBlack(piece) && (isRook(piece) || isQueen(piece)))
+		{
+			return true;
+		}
+	}
+
+	for (int i = 0; i < 7; i++) {
+		if ((src.x + i > 7 || src.y + i > 7)) {
+			break;
+		}
+		char piece = mBoard[src.x + i][src.y + i];
+		if (king == 'K' && isWhite(piece) && (isBishop(piece) || isQueen(piece))) {
+			return true;
+		}
+		if (king == 'k' && isBlack(piece) && (isBishop(piece) || isQueen(piece))) {
+			return true;
+		}
+	}
+	for (int i = 0; i < 7; i++) {
+		if ((src.x - i < 0 || src.y - i < 0)) {
+			break;
+		}
+		char piece = mBoard[src.x - i][src.y - i];
+		if (king == 'K' && isWhite(piece) && (isBishop(piece) || isQueen(piece))) {
+			return true;
+		}
+		if (king == 'k' && isBlack(piece) && (isBishop(piece) || isQueen(piece))) {
+			return true;
+		}
+	}
+	for (int i = 0; i < 7; i++) {
+		if ((src.x + i > 7 || src.y - i < 0)) {
+			break;
+		}
+		char piece = mBoard[src.x + i][src.y - i];
+		if (king == 'K' && isWhite(piece) && (isBishop(piece) || isQueen(piece))) {
+			return true;
+		}
+		if (king == 'k' && isBlack(piece) && (isBishop(piece) || isQueen(piece))) {
+			return true;
+		}
+	}
+	for (int i = 0; i < 7; i++) {
+		if ((src.x - i < 0 || src.y + i > 7)) {
+			break;
+		}
+		char piece = mBoard[src.x - i][src.y + i];
+		if (king == 'K' && isWhite(piece) && (isBishop(piece) || isQueen(piece))) {
+			return true;
+		}
+		if (king == 'k' && isBlack(piece) && (isBishop(piece) || isQueen(piece))) {
+			return true;
+		}
+	}
+
 
 	return false;
 }
