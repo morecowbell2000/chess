@@ -1,6 +1,5 @@
 #include "board.h"
 #include <iostream>
-
 using namespace std;
 
 char gInitBoard[][8] = {
@@ -61,9 +60,12 @@ Board::whiteInCheck(int x) {
 	}
 
 	if (src.x || src.y == -1) {
-		
+		cout << "\n\nThere is a king missing on your board?\n\n";
 	}
 
+	int above = 7 - src.y;
+	int below = abs(src.y - 7);
+	int right;
 
 	return false;
 }
