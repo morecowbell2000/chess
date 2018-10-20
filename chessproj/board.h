@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 
+//to fix any build errors between versions simply retarget the solution. Right click it, and click re-target
 
 
 typedef struct {  

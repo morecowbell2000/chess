@@ -1,5 +1,9 @@
 #include "board.h"
 #include <iostream>
+#include <ctype.h>
+
+//to fix any build errors between versions simply retarget the solution. Right click it, and click re-target
+
 using namespace std;
 
 char gInitBoard[][8] = {
@@ -38,6 +42,7 @@ Board::~Board()
 bool
 Board::whiteInCheck(int x) {
 	//make x zero to check for white, make it 1 for black. This redundifies the blackInCheck function but I'm still keeping it
+	/*
 	char king = 'k';
 	if (x == 1) {
 		king == 'K';
@@ -139,13 +144,14 @@ Board::whiteInCheck(int x) {
 	}
 
 
-	return false;
+	*/
+return false;
 }
 bool
 Board::blackInCheck() {
-
+	return false;
 	
-	return whiteInCheck(1);
+	//return whiteInCheck(1);
 }
 
 bool

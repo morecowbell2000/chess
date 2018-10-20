@@ -1,4 +1,4 @@
 ﻿  board.cpp
-d:\unity\chess4\chessproj\board.cpp(43): warning C4553: '==': result of expression not used; did you intend '='?
-d:\unity\chess4\chessproj\board.cpp(160): warning C4804: '<': unsafe use of type 'bool' in operation
-  chessproj.vcxproj -> D:\Unity\chess4\chessproj\Debug\chessproj.exe
+c:\code\chess\chessproj\board.cpp(166): warning C4804: '<': unsafe use of type 'bool' in operation
+  chessproj.vcxproj -> C:\code\chess\chessproj\Debug\chessproj.exe
+  chessproj.vcxproj -> C:\code\chess\chessproj\Debug\chessproj.pdb (Partial PDB)

@@ -1,6 +1,8 @@
 #include <string>
 #include <iostream>
 #include "board.h"
+//to fix any build errors between versions simply retarget the solution. Right click it, and click re-target
+
 
 using namespace std;
 
