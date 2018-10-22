@@ -141,11 +141,62 @@ Board::whiteInCheck(int x) {
 		if (king == 'k' && isBlack(piece) && (isBishop(piece) || isQueen(piece))) {
 			return true;
 		}
+	}*/
+Location src, kingloc;
+
+kingloc.x = -1;
+kingloc.y = -1;
+
+for (int g = 0; g < 8; g++) {
+	for (int z = 0; z < 8; z++) {
+		if (mBoard[z][g] == 'k') {
+			kingloc.x = z;
+			kingloc.y = g;
+			break;
+		}
 	}
+	if (kingloc.x != -1 && kingloc.y != -1) {
+		break;
+	}
+}
 
 
-	*/
-return false;
+if (x == 0) {
+	for (int i = 0; i < 8; i++) {
+		for (int q = 0; q < 8; q++) {
+			char piece = mBoard[q][i];
+			if (piece != ' ' && isBlack(piece)) {
+				src.x = q;
+				src.y = i;
+				if(isLegal(piece, src, kingloc));
+				{
+					return true;
+				}
+
+			}
+		}
+	}
+}
+else {
+	for (int i = 0; i < 8; i++) {
+		for (int q = 0; q < 8; q++) {
+			char piece = mBoard[q][i];
+			if (piece != ' ' && isWhite(piece)) {
+				src.x = q;
+				src.y = i;
+				if(isLegal(piece, src, kingloc));
+				{
+					return true;
+				}
+
+			}
+		}
+	}
+}
+
+
+	
+	return false;
 }
 bool
 Board::blackInCheck() {
@@ -281,7 +332,7 @@ Board::isLegalKnight(char i_piece, Location &i_src, Location &i_dst)
 
 bool
 Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
-
+	Location test;
 	int k;
 	//int diff;
 	//doesn't allow landing on own pieces.
@@ -301,15 +352,31 @@ Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
 						//are we going left
 						if (i_src.y - i_dst.y < 0) {
 							//up
-							if (mBoard[i_src.x - (k-1)][i_src.y + (1 + k)] != ' ') {
-								return false;
+
+							test.x = i_src.x - (k - 1);
+							test.y = i_src.y + (1 + k);
+
+							if (mBoard[test.x][test.y] != ' ') {
+								if (test.x == i_dst.x && test.y == i_dst.y) {
+
+								}
+								else {
+									return false;
+								}
 							}
 						}
 						else {
 							//or down
-							if (mBoard[i_src.x - (k-1)][i_src.y - (1 + k)] != ' ') {
-								
-								return false;
+							test.x = i_src.x - (k - 1);
+							test.y = i_src.y - (1 + k);
+
+							if (mBoard[test.x][test.y] != ' ') {
+								if (test.x == i_dst.x && test.y == i_dst.y) {
+
+								}
+								else {
+									return false;
+								}
 							}
 						}
 					}
@@ -317,15 +384,30 @@ Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
 						//or going right
 						if (i_src.y - i_dst.y < 0) {
 							//up
-							if (mBoard[i_src.x + (k-1)][i_src.y + (1 + k)] != ' ') {
+							test.x = i_src.x + (k + 1);
+							test.y = i_src.y + (1 + k);
+							if (mBoard[test.x][test.y] != ' ') {
+								if (test.x == i_dst.x && test.y == i_dst.y) {
 
-								return false;
+								}
+								else {
+									return false;
+								}
 							}
 						}
 						else {
 							//or down
-							if (mBoard[i_src.x + (k-1)][i_src.y - (1 + k)] != ' ') {
-								return false;
+							test.x = i_src.x + (k - 1);
+							test.y = i_src.y - (1 + k);
+
+
+							if (mBoard[test.x][test.y] != ' ') {
+								if (test.x == i_dst.x && test.y == i_dst.y) {
+
+								}
+								else {
+									return false;
+								}
 							}
 						}
 					}
@@ -506,7 +588,8 @@ Board::move(const std::string &i_move)
 		Location dst, src;
 		dst.x = xMoveTo;
 		dst.y = i_move[1] -  '1';
-		if (isWhiteCheck() || isBlackCheck()) {
+		if (isWhiteCheck() || isBlackCheck()) 
+		{
 			if (search(mIsWhite ? 'k' : 'K', src, dst))
 			{
 				if (!whiteInCheck(0) || !blackInCheck()) {
