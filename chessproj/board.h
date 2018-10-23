@@ -14,8 +14,7 @@ class Board
 public:
 	Board();
 	~Board();
-	bool whiteCheck = false;
-	bool blackCheck = false;
+	
 
 	bool isWhiteCheck() { return whiteCheck; }
 	bool isBlackCheck() { return blackCheck; }
@@ -56,7 +55,8 @@ private:
 	bool search(char i_piece, Location &i_dst, Location &o_src);
 	char  mBoard[8][8];
 
-
+	bool whiteCheck = false;
+	bool blackCheck = false;
 
 
 

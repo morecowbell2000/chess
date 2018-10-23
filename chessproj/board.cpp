@@ -22,7 +22,7 @@ char gInitBoard[][8] = {
 
 
 //Flip X and Y because of definition above
-Board::Board() : mIsWhite(true)
+Board::Board() : mIsWhite(true), blackCheck(false), whiteCheck(false)
 {
 	int i, j;
 	for (i = 0; i < 8; i++)
@@ -352,8 +352,8 @@ Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
 						//are we going left
 						if (i_src.y - i_dst.y < 0) {
 							//up
-
-							test.x = i_src.x - (k - 1);
+							
+							test.x = i_src.x - (k+1);
 							test.y = i_src.y + (1 + k);
 
 							if (mBoard[test.x][test.y] != ' ') {
@@ -367,8 +367,8 @@ Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
 						}
 						else {
 							//or down
-							test.x = i_src.x - (k - 1);
-							test.y = i_src.y - (1 + k);
+							test.x = (i_src.x - (k))+1;
+							test.y = (i_src.y - (k))+1;
 
 							if (mBoard[test.x][test.y] != ' ') {
 								if (test.x == i_dst.x && test.y == i_dst.y) {
@@ -384,8 +384,8 @@ Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
 						//or going right
 						if (i_src.y - i_dst.y < 0) {
 							//up
-							test.x = i_src.x + (k + 1);
-							test.y = i_src.y + (1 + k);
+							test.x = i_src.x + k;
+							test.y = i_src.y + k;
 							if (mBoard[test.x][test.y] != ' ') {
 								if (test.x == i_dst.x && test.y == i_dst.y) {
 
@@ -624,13 +624,23 @@ Board::move(const std::string &i_move)
 	}
 	else if (i_move.length() == 3) 
 	{
+		
 		Location dst, src;
 		dst.x = toGrid(i_move[1]);
 		dst.y = i_move[2] - '1';
 
+		if (((whiteCheck == true && mIsWhite) || (blackCheck == true && !mIsWhite)) && tolower(i_move[0]) != 'k' ) {
+			cout << "\n\nWe already told you... Your king is in check\n\n Try AGAIN\n\n";
+			return false;
+		}
+
 		if (search(mIsWhite ? tolower(i_move[0]) : toupper(i_move[0]), src, dst)) {
 			mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
 			mBoard[src.x][src.y] = ' ';
+
+
+
+			
 
 			mIsWhite = !mIsWhite;
 		}
@@ -653,6 +663,12 @@ Board::move(const std::string &i_move)
 		src.y = i_move[1] - '1';
 
 		char piecetoMove = mBoard[src.x][src.y];
+
+		if (((whiteCheck == true && mIsWhite) || (blackCheck == true && !mIsWhite)) && tolower(piecetoMove) != 'k') {
+			cout << "\n\nWe already told you... Your king is in check\n\n Try AGAIN\n\n";
+			return false;
+		}
+
 
 		if ((mIsWhite == true && islower(piecetoMove)) || (mIsWhite == false && isupper(piecetoMove)))
 		{
@@ -680,7 +696,12 @@ Board::move(const std::string &i_move)
 		return false;
 	}
 	
-	
+	if (mIsWhite) {
+		blackCheck = blackInCheck();
+	}
+	else {
+		whiteCheck = whiteInCheck(0);
+	}
 
 	
 	return true;
@@ -708,6 +729,3 @@ Board::print()
 	}
 
 }
-
-
-
