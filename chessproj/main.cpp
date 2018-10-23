@@ -26,7 +26,7 @@ main(int argc, char *argv)
 		}
 		else {
 			if (board->isBlackCheck()) {
-				cout << "\n\n***WHITE*** YOUR KING IS IN CHECK\nMove: ";
+				cout << "\n\n***BLACK*** YOUR KING IS IN CHECK\nMove: ";
 			}
 			else {
 				cout << "\n\n***Black*** Please make a move\nMove: ";
