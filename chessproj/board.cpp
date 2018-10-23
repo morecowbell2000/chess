@@ -5,7 +5,6 @@
 //to fix any build errors between versions simply retarget the solution. Right click it, and click re-target
 
 using namespace std;
-
 char gInitBoard[][8] = {
 							{ 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r' },
 							{ 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' },
@@ -146,45 +145,61 @@ Location src, kingloc;
 
 kingloc.x = -1;
 kingloc.y = -1;
-
-for (int g = 0; g < 8; g++) {
-	for (int z = 0; z < 8; z++) {
-		if (mBoard[z][g] == 'k') {
-			kingloc.x = z;
-			kingloc.y = g;
+if (x == 0) {
+	for (int g = 0; g < 8; g++) {
+		for (int z = 0; z < 8; z++) {
+			if (mBoard[z][g] == 'k') {
+				kingloc.x = z;
+				kingloc.y = g;
+				break;
+			}
+		}
+		if (kingloc.x != -1 && kingloc.y != -1) {
 			break;
 		}
 	}
-	if (kingloc.x != -1 && kingloc.y != -1) {
-		break;
-	}
-}
 
 
-if (x == 0) {
-	for (int i = 0; i < 8; i++) {
-		for (int q = 0; q < 8; q++) {
-			char piece = mBoard[q][i];
-			if (piece != ' ' && isBlack(piece)) {
-				src.x = q;
-				src.y = i;
-				if(isLegal(piece, src, kingloc));
-				{
-					return true;
+	
+		for (int i = 0; i < 8; i++) {
+			for (int q = 0; q < 8; q++) {
+				char piece = mBoard[q][i];
+				if (piece != ' ' && isBlack(piece)) {
+					src.x = q;
+					src.y = i;
+					if (isLegal(piece, src, kingloc))
+					{
+						return true;
+					}
+
 				}
-
 			}
 		}
-	}
+	
 }
 else {
-	for (int i = 0; i < 8; i++) {
-		for (int q = 0; q < 8; q++) {
+	for (int g = 0; g < 8; g++) {
+		for (int z = 0; z < 8; z++) {
+			if (mBoard[z][g] == 'K') {
+				kingloc.x = z;
+				kingloc.y = g;
+				break;
+			}
+		}
+		if (kingloc.x != -1 && kingloc.y != -1) {
+			break;
+		}
+	}
+	for (int i = 0; i < 8; i++) 
+	{
+		for (int q = 0; q < 8; q++) 
+		{
 			char piece = mBoard[q][i];
-			if (piece != ' ' && isWhite(piece)) {
+			if (piece != ' ' && isWhite(piece))
+			{
 				src.x = q;
 				src.y = i;
-				if(isLegal(piece, src, kingloc));
+				if(isLegal(piece, src, kingloc))
 				{
 					return true;
 				}
@@ -200,9 +215,8 @@ else {
 }
 bool
 Board::blackInCheck() {
-	return false;
 	
-	//return whiteInCheck(1);
+	return whiteInCheck(1);
 }
 
 bool
@@ -596,15 +610,16 @@ Board::move(const std::string &i_move)
 					mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
 					mBoard[src.x][src.y] = ' ';
 
-					mIsWhite = !mIsWhite;
 				}
 				else {
 					cout << "\n\nYou're king is still in check.\n\n";
+					return false;
 				}
 
 			}
 			else {
 				cout << "\n\nYou made an illegal move, or this program sucks.\n\n";
+				return false;
 			}
 		
 		}
@@ -615,10 +630,10 @@ Board::move(const std::string &i_move)
 				mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
 				mBoard[src.x][src.y] = ' ';
 
-				mIsWhite = !mIsWhite;
 			}
 			else {
 				cout << "\n\nYou made an illegal move, or this program sucks.\n\n";
+				return false;
 			}
 		}
 	}
@@ -642,10 +657,10 @@ Board::move(const std::string &i_move)
 
 			
 
-			mIsWhite = !mIsWhite;
 		}
 		else {
 			cout << "\n\nYou made an illegal move, or this program sucks.\n\n";
+			return false;
 		}
 
 
@@ -680,10 +695,10 @@ Board::move(const std::string &i_move)
 				mBoard[src.x][src.y] = ' ';
 
 
-				mIsWhite = !mIsWhite;
 			}
 			else {
 				cout << "\n\nYou made an illegal move, or this program sucks.\n\n";
+				return false;
 			}
 		}
 				
@@ -695,13 +710,14 @@ Board::move(const std::string &i_move)
 	else {
 		return false;
 	}
-	
+	//its written like this since the isWhite is changed earlier
 	if (mIsWhite) {
 		blackCheck = blackInCheck();
 	}
 	else {
 		whiteCheck = whiteInCheck(0);
 	}
+	mIsWhite = !mIsWhite;
 
 	
 	return true;
