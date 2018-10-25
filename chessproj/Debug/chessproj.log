@@ -1,3 +1,2 @@
-﻿  board.cpp
-d:\unity\chess4\chessproj\board.cpp(231): warning C4804: '<': unsafe use of type 'bool' in operation
+﻿  main.cpp
   chessproj.vcxproj -> D:\Unity\chess4\chessproj\Debug\chessproj.exe
