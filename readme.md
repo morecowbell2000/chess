@@ -1,0 +1,1 @@
+Simply make sure you have gcc and make. Then type in make in the command line once in this directory.
