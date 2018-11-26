@@ -164,7 +164,7 @@ if (x == 0) {
 		for (int i = 0; i < 8; i++) {
 			for (int q = 0; q < 8; q++) {
 				char piece = mBoard[q][i];
-				if (piece != ' ' && isBlack(piece)) {
+				if (piece != ' ' && isBlack(piece) && piece != 'K') {
 					src.x = q;
 					src.y = i;
 					if (isLegal(piece, src, kingloc))
@@ -195,7 +195,7 @@ else {
 		for (int q = 0; q < 8; q++) 
 		{
 			char piece = mBoard[q][i];
-			if (piece != ' ' && isWhite(piece))
+			if (piece != ' ' && isWhite(piece) && piece != 'k')
 			{
 				src.x = q;
 				src.y = i;
