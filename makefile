@@ -70,6 +70,7 @@ $(MAIN): $(OBJS)
 clean:
 		$(RM) *.o *~ $(MAIN)
 		$(RM) -r *.dSYM
+		$(RM) *.exe *~ $(MAIN)
 
 depend: $(SRCS)
 		makedepend $(INCLUDES) $^
