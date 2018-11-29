@@ -40,7 +40,7 @@ private:
 	bool   isWhite(char i_piece) { return islower(i_piece) != 0; }
 	bool   isBlack(char i_piece) { return !isWhite(i_piece); }
 
-
+	void mBoardToSaveBoard(int g);
 	bool   isPawn(char i_piece) { return tolower(i_piece) == 'p'; }
 	bool   isBishop(char i_piece) { return tolower(i_piece) == 'b'; }
 	bool   isKnight(char i_piece) { return tolower(i_piece) == 'n'; }
@@ -51,13 +51,15 @@ private:
 
 
 private:
-	bool mIsWhite;
+	
 	bool search(char i_piece, Location &i_dst, Location &o_src);
 	char  mBoard[8][8];
-
-	bool whiteCheck = false;
-	bool blackCheck = false;
-
+	char SaveBoard[8][8];
+	
+	bool blackCheck;
+	bool whiteCheck;
+	bool mIsWhite;
+	bool wKmoved, bKmoved, wrRmoved, wlRmoved, brRmoved, blRmoved;
 
 
 };

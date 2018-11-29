@@ -21,8 +21,22 @@ char gInitBoard[][8] = {
 
 
 //Flip X and Y because of definition above
-Board::Board() : mIsWhite(true), blackCheck(false), whiteCheck(false)
+Board::Board()
 {
+	//initialize variables
+	mIsWhite = true;
+	blackCheck = false;
+	whiteCheck = false;
+	
+	wKmoved = false; 
+	bKmoved = false;
+	wrRmoved = false;
+	wlRmoved = false;
+	brRmoved = false;
+	blRmoved = false;
+
+
+	//initialize board
 	int i, j;
 	for (i = 0; i < 8; i++)
 	{
@@ -228,7 +242,7 @@ Board::isLegalKing(char i_piece, Location &i_src, Location &i_dst) {
 	else 
 	{
 		if (isLegalRook(i_piece, i_src, i_dst) == true || isLegalBishop(i_piece, i_src, i_dst) == true) {
-			if (!(0 <= abs(i_src.x - i_dst.x) < 2) || !(0 <= abs(i_src.y - i_dst.y) < 2)) {
+			if (!((0 <= abs(i_src.x - i_dst.x)) < 2) || !((0 <= abs(i_src.y - i_dst.y)) < 2)) {
 				return false;
 			}
 			else
@@ -572,7 +586,29 @@ Board::search(char i_piece, Location &o_src, Location &i_dst ) {
 	return false;
 }
 
-
+void 
+Board::mBoardToSaveBoard(int g) { //1 = inverse, ie SaveBoard to Mboard
+	
+	if (g == 0) {
+		for (int w = 0; w < 8; w++)
+		{
+			for (int z = 0; z < 8; z++)
+			{
+				SaveBoard[w][z] = mBoard[w][z];
+			}
+		}
+	}
+	if (g == 1) 
+	{
+		for (int w = 0; w < 8; w++)
+		{
+			for (int z = 0; z < 8; z++)
+			{
+				mBoard[w][z] = SaveBoard[w][z];
+			}
+		}
+	}
+}
 
 
 
@@ -589,8 +625,6 @@ Board::toGrid(char x)
 }
 
 
-
-
 bool
 Board::move(const std::string &i_move) 
 {
@@ -604,18 +638,35 @@ Board::move(const std::string &i_move)
 		dst.y = i_move[1] -  '1';
 		if (isWhiteCheck() || isBlackCheck()) 
 		{
-			if (search(mIsWhite ? 'k' : 'K', src, dst))
+			if (search(mIsWhite ? 'p' : 'P', src, dst))
 			{
-				if (!whiteInCheck(0) || !blackInCheck()) {
+				mBoardToSaveBoard(0);
+				if (search(mIsWhite ? tolower(i_move[0]) : toupper(i_move[0]), src, dst))
+				{
+					mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+					mBoard[src.x][src.y] = ' ';
+
+					if (mIsWhite) {
+						if (whiteInCheck(0)) {
+							cout << "\n\nWe already told you... Your king is in check\n\n Try AGAIN\n\n";
+							mBoardToSaveBoard(1);
+							return false;
+						}
+					}
+					else {
+						if (blackInCheck()) {
+							cout << "\n\nWe already told you... Your king is in check\n\n Try AGAIN\n\n";
+							mBoardToSaveBoard(1);
+							return false;
+						}
+					}
+					mBoardToSaveBoard(1);
+				}
+				if (!whiteInCheck(0) && !blackInCheck()) {
 					mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
 					mBoard[src.x][src.y] = ' ';
 
 				}
-				else {
-					cout << "\n\nYou're king is still in check.\n\n";
-					return false;
-				}
-
 			}
 			else {
 				cout << "\n\nYou made an illegal move, or this program sucks.\n\n";
@@ -637,19 +688,209 @@ Board::move(const std::string &i_move)
 			}
 		}
 	}
+	else if (i_move == "O-O" || i_move == "0-0")
+	{
+		if (mIsWhite)
+		{
+			if (wKmoved == true || wrRmoved == true)
+			{
+				cout << "\n\nyou've alread moved your king or rook.\n\n";
+				return false;
+			}
+			else
+			{
+				if (mBoard[0][5] == ' ' && mBoard[0][6] == ' ' && whiteInCheck(0) == false)
+				{
+					mBoardToSaveBoard(0);
+					mBoard[0][5] = 'k';
+					mBoard[0][4] = ' ';
+					if (whiteInCheck(0) == false)
+					{
+						mBoard[0][6] = 'k';
+						mBoard[0][5] = ' ';
+						mBoard[0][5] = 'r';
+						mBoard[0][7] = ' ';
+					}
+					else
+					{
+						mBoardToSaveBoard(1);
+						cout << "\n\nYou just tried to castle in, out, or through check. Try again.\n\n";
+						return false;
+					}
+					if (whiteInCheck(0) == true)
+					{
+						mBoardToSaveBoard(1);
+						cout << "\n\nYou just tried to castle in, out, or through check. Try again.\n\n";
+						return false;
+
+					}
+				}
+			}
+		}
+		else
+		{
+			if (bKmoved == true || brRmoved == true)
+			{
+				cout << "\n\nyou've alread moved your king or rook.\n\n";
+				return false;
+			}
+			else
+			{
+				if (mBoard[7][5] == ' ' && mBoard[7][6] == ' ' && blackInCheck() == false)
+				{
+					mBoardToSaveBoard(0);
+					mBoard[7][5] = 'K';
+					mBoard[7][4] = ' ';
+					if (blackInCheck() == false)
+					{
+						mBoard[7][6] = 'K';
+						mBoard[7][5] = ' ';
+						mBoard[7][5] = 'R';
+						mBoard[7][7] = ' ';
+					}
+					else
+					{
+						mBoardToSaveBoard(1);
+						cout << "\n\nYou just tried to castle in, out, or through check. Try again.\n\n";
+						return false;
+					}
+					if (blackInCheck() == true)
+					{
+						mBoardToSaveBoard(1);
+						cout << "\n\nYou just tried to castle in, out, or through check. Try again.\n\n";
+						return false;
+
+					}
+				}
+			}
+		}
+	}
+	else if (i_move == "O-O-O" || i_move == "0-0-0")
+	{
+		if (mIsWhite)
+		{
+			if (wKmoved == true || wlRmoved == true)
+			{
+				cout << "\n\nyou've alread moved your king or rook.\n\n";
+				return false;
+			}
+			else
+			{
+				if (mBoard[0][3] == ' ' && mBoard[0][2] == ' ' && mBoard[0][1] == ' ' && whiteInCheck(0) == false)
+				{
+					mBoardToSaveBoard(0);
+					mBoard[0][3] = 'k';
+					mBoard[0][4] = ' ';
+					if (whiteInCheck(0) == false)
+					{
+						mBoard[0][2] = 'k';
+						mBoard[0][3] = ' ';
+						mBoard[0][3] = 'r';
+						mBoard[0][0] = ' ';
+					}
+					else
+					{
+						mBoardToSaveBoard(1);
+						cout << "\n\nYou just tried to castle in, out, or through check. Try again.\n\n";
+						return false;
+					}
+					if (whiteInCheck(0) == true)
+					{
+						mBoardToSaveBoard(1);
+						cout << "\n\nYou just tried to castle in, out, or through check. Try again.\n\n";
+						return false;
+
+					}
+				}
+			}
+		}
+		else
+		{
+			if (bKmoved == true || blRmoved == true)
+			{
+				cout << "\n\nyou've alread moved your king or rook.\n\n";
+				return false;
+			}
+			else
+			{
+				if (mBoard[7][3] == ' ' && mBoard[7][2] == ' ' && mBoard[7][1] == ' ' && blackInCheck() == false)
+				{
+					mBoardToSaveBoard(0);
+					mBoard[7][3] = 'k';
+					mBoard[7][4] = ' ';
+					if (blackInCheck() == false)
+					{
+						mBoard[7][2] = 'k';
+						mBoard[7][3] = ' ';
+						mBoard[7][3] = 'r';
+						mBoard[7][0] = ' ';
+					}
+					else
+					{
+						mBoardToSaveBoard(1);
+						cout << "\n\nYou just tried to castle in, out, or through check. Try again.\n\n";
+						return false;
+					}
+					if (blackInCheck() == true)
+					{
+						mBoardToSaveBoard(1);
+						cout << "\n\nYou just tried to castle in, out, or through check. Try again.\n\n";
+						return false;
+
+					}
+				}
+			}
+		}
+	}
+	else if (i_move == "quit")
+	{
+		if (mIsWhite) {
+
+		}
+		return false;
+	}
 	else if (i_move.length() == 3) 
 	{
 		
 		Location dst, src;
 		dst.x = toGrid(i_move[1]);
 		dst.y = i_move[2] - '1';
+		mBoardToSaveBoard(0);
+		
+		if (((whiteCheck == true && mIsWhite) || (blackCheck == true && !mIsWhite))) 
+		{
+			if (search(mIsWhite ? tolower(i_move[0]) : toupper(i_move[0]), src, dst)) 
+			{
+				mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+				mBoard[src.x][src.y] = ' ';
 
-		if (((whiteCheck == true && mIsWhite) || (blackCheck == true && !mIsWhite)) && tolower(i_move[0]) != 'k' ) {
-			cout << "\n\nWe already told you... Your king is in check\n\n Try AGAIN\n\n";
-			return false;
-		}
+				if (mIsWhite) {
+					if (whiteInCheck(0)) {
+						cout << "\n\nWe already told you... Your king is in check\n\n Try AGAIN\n\n";
+						mBoardToSaveBoard(1);
+						return false;
+					}
+				}
+				else {
+					if (blackInCheck()) {
+						cout << "\n\nWe already told you... Your king is in check\n\n Try AGAIN\n\n";
+						mBoardToSaveBoard(1);
+						return false;
+					}
+				}
 
-		if (search(mIsWhite ? tolower(i_move[0]) : toupper(i_move[0]), src, dst)) {
+
+
+
+			}
+			else 
+			{
+				cout << "\n\nYou made an illegal move, or this program sucks.\n\n";
+				return false;
+			}
+		} 
+		else if (search(mIsWhite ? tolower(i_move[0]) : toupper(i_move[0]), src, dst)) 
+		{
 			mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
 			mBoard[src.x][src.y] = ' ';
 
@@ -676,16 +917,30 @@ Board::move(const std::string &i_move)
 
 		src.x = toGrid(i_move[0]);
 		src.y = i_move[1] - '1';
-
+		mBoardToSaveBoard(0);
 		char piecetoMove = mBoard[src.x][src.y];
 
-		if (((whiteCheck == true && mIsWhite) || (blackCheck == true && !mIsWhite)) && tolower(piecetoMove) != 'k') {
-			cout << "\n\nWe already told you... Your king is in check\n\n Try AGAIN\n\n";
-			return false;
+		if (((whiteCheck == true && mIsWhite) || (blackCheck == true && !mIsWhite))) {
+			
+			mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+			mBoard[src.x][src.y] = ' ';
+
+			if (mIsWhite) {
+				if (whiteInCheck(0)) {
+					cout << "\n\nWe already told you... Your king is in check\n\n Try AGAIN\n\n";
+					mBoardToSaveBoard(1);
+					return false;
+				}
+			}
+			else {
+				if (blackInCheck()) {
+					cout << "\n\nWe already told you... Your king is in check\n\n Try AGAIN\n\n";
+					mBoardToSaveBoard(1);
+					return false;
+				}
+			}
 		}
-
-
-		if ((mIsWhite == true && islower(piecetoMove)) || (mIsWhite == false && isupper(piecetoMove)))
+		else if ((mIsWhite == true && islower(piecetoMove)) || (mIsWhite == false && isupper(piecetoMove)))
 		{
 
 			if (isLegal(piecetoMove, src, dst))
@@ -702,15 +957,36 @@ Board::move(const std::string &i_move)
 			}
 		}
 				
-
-
-
+		if (piecetoMove == 'k') {
+			wKmoved = true;
+		}
+		if (piecetoMove == 'r') {
+			if (src.x == 0 && src.y == 0) {
+				wlRmoved = true;
+			}
+			if (src.x == 7 && src.y == 0) {
+				wrRmoved = true;
+			}
+		}
+		if (piecetoMove == 'K') {
+			bKmoved = true;
+		}
+		if (piecetoMove == 'R') {
+			if (src.x == 0 && src.y == 0) {
+				blRmoved = true;
+			}
+			if (src.x == 7 && src.y == 0) {
+				brRmoved = true;
+			}
+		}
 		
 	}
-	else {
+	
+	else 
+	{
 		return false;
 	}
-	//its written like this since the isWhite is changed earlier
+	//its written like this since the next turn will be this piece.
 	if (mIsWhite) {
 		blackCheck = blackInCheck();
 	}

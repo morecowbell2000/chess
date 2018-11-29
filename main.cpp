@@ -1,13 +1,12 @@
-#include <string>
 #include <iostream>
-#include "board.h"
+#include "board.h" //has string
 //to fix any build errors between versions simply retarget the solution. Right click it, and click re-target
 
 
 using namespace std;
 
 int 
-main(int argc, char *argv)
+main(int argc, char **argv)
 {
 	Board *board = new Board();
 
