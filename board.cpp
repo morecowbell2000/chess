@@ -776,16 +776,16 @@ Board::move(const std::string &i_move)
 			}
 			else
 			{
-				if (mBoard[0][3] == ' ' && mBoard[0][2] == ' ' && mBoard[0][1] == ' ' && whiteInCheck(0) == false)
+				if (mBoard[3][0] == ' ' && mBoard[2][0] == ' ' && mBoard[1][0] == ' ' && whiteInCheck(0) == false)
 				{
 					mBoardToSaveBoard(0);
-					mBoard[0][3] = 'k';
-					mBoard[0][4] = ' ';
+					mBoard[3][0] = 'k';
+					mBoard[4][0] = ' ';
 					if (whiteInCheck(0) == false)
 					{
-						mBoard[0][2] = 'k';
-						mBoard[0][3] = ' ';
-						mBoard[0][3] = 'r';
+						mBoard[2][0] = 'k';
+						mBoard[3][0] = ' ';
+						mBoard[3][0] = 'r';
 						mBoard[0][0] = ' ';
 					}
 					else
