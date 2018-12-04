@@ -699,17 +699,17 @@ Board::move(const std::string &i_move)
 			}
 			else
 			{
-				if (mBoard[0][5] == ' ' && mBoard[0][6] == ' ' && whiteInCheck(0) == false)
+				if (mBoard[5][0] == ' ' && mBoard[6][0] == ' ' && whiteInCheck(0) == false)
 				{
 					mBoardToSaveBoard(0);
-					mBoard[0][5] = 'k';
-					mBoard[0][4] = ' ';
+					mBoard[5][0] = 'k';
+					mBoard[4][0] = ' ';
 					if (whiteInCheck(0) == false)
 					{
-						mBoard[0][6] = 'k';
-						mBoard[0][5] = ' ';
-						mBoard[0][5] = 'r';
-						mBoard[0][7] = ' ';
+						mBoard[6][0] = 'k';
+						mBoard[5][0] = ' ';
+						mBoard[5][0] = 'r';
+						mBoard[7][0] = ' ';
 					}
 					else
 					{
@@ -736,16 +736,16 @@ Board::move(const std::string &i_move)
 			}
 			else
 			{
-				if (mBoard[7][5] == ' ' && mBoard[7][6] == ' ' && blackInCheck() == false)
+				if (mBoard[5][7] == ' ' && mBoard[6][7] == ' ' && blackInCheck() == false)
 				{
 					mBoardToSaveBoard(0);
-					mBoard[7][5] = 'K';
-					mBoard[7][4] = ' ';
+					mBoard[5][7] = 'K';
+					mBoard[4][7] = ' ';
 					if (blackInCheck() == false)
 					{
-						mBoard[7][6] = 'K';
-						mBoard[7][5] = ' ';
-						mBoard[7][5] = 'R';
+						mBoard[6][7] = 'K';
+						mBoard[5][7] = ' ';
+						mBoard[5][7] = 'R';
 						mBoard[7][7] = ' ';
 					}
 					else
@@ -813,17 +813,17 @@ Board::move(const std::string &i_move)
 			}
 			else
 			{
-				if (mBoard[7][3] == ' ' && mBoard[7][2] == ' ' && mBoard[7][1] == ' ' && blackInCheck() == false)
+				if (mBoard[3][7] == ' ' && mBoard[2][7] == ' ' && mBoard[1][7] == ' ' && blackInCheck() == false)
 				{
 					mBoardToSaveBoard(0);
-					mBoard[7][3] = 'k';
-					mBoard[7][4] = ' ';
+					mBoard[3][7] = 'k';
+					mBoard[4][7] = ' ';
 					if (blackInCheck() == false)
 					{
-						mBoard[7][2] = 'k';
-						mBoard[7][3] = ' ';
-						mBoard[7][3] = 'r';
-						mBoard[7][0] = ' ';
+						mBoard[2][7] = 'k';
+						mBoard[3][7] = ' ';
+						mBoard[3][7] = 'r';
+						mBoard[0][7] = ' ';
 					}
 					else
 					{
