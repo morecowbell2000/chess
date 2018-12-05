@@ -28,12 +28,13 @@ Board::Board()
 	blackCheck = false;
 	whiteCheck = false;
 	
-	wKmoved = false; 
+	wKmoved = false;
 	bKmoved = false;
 	wrRmoved = false;
 	wlRmoved = false;
 	brRmoved = false;
 	blRmoved = false;
+	pawnMovedTwo = false;
 
 
 	//initialize board
@@ -476,6 +477,7 @@ Board::isLegal(char i_piece,  Location &i_src, Location &i_dst) {
 					if (mBoard[i_src.x][i_src.y + 1] != ' ') {
 						return false;
 					}
+					pawnMovedTwo = true;
 					return true;
 				}
 				if (diff == 1)
@@ -513,7 +515,7 @@ Board::isLegal(char i_piece,  Location &i_src, Location &i_dst) {
 					if (mBoard[i_src.x][i_src.y - 1] != ' ') {
 						return false;
 					}
-
+					pawnMovedTwo = true;
 					return true;
 				}
 
@@ -851,7 +853,6 @@ Board::move(const std::string &i_move)
 	}
 	else if (i_move.length() == 3) 
 	{
-		
 		Location dst, src;
 		dst.x = toGrid(i_move[1]);
 		dst.y = i_move[2] - '1';
@@ -861,6 +862,7 @@ Board::move(const std::string &i_move)
 		{
 			if (search(mIsWhite ? tolower(i_move[0]) : toupper(i_move[0]), src, dst)) 
 			{
+
 				mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
 				mBoard[src.x][src.y] = ' ';
 
@@ -902,6 +904,28 @@ Board::move(const std::string &i_move)
 		else {
 			cout << "\n\nYou made an illegal move, or this program sucks.\n\n";
 			return false;
+		}
+		if (i_move[0] == 'k') {
+			wKmoved = true;
+		}
+		if (i_move[0] == 'r') {
+			if (src.x == 0 && src.y == 0) {
+				wlRmoved = true;
+			}
+			if (src.x == 7 && src.y == 0) {
+				wrRmoved = true;
+			}
+		}
+		if (i_move[0] == 'K') {
+			bKmoved = true;
+		}
+		if (i_move[0] == 'R') {
+			if (src.x == 0 && src.y == 0) {
+				blRmoved = true;
+			}
+			if (src.x == 7 && src.y == 0) {
+				brRmoved = true;
+			}
 		}
 
 

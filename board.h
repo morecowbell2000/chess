@@ -60,6 +60,6 @@ private:
 	bool whiteCheck;
 	bool mIsWhite;
 	bool wKmoved, bKmoved, wrRmoved, wlRmoved, brRmoved, blRmoved;
-
+	bool pawnMovedTwo;
 
 };
