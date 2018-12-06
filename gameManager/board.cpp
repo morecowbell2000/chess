@@ -23,6 +23,7 @@ char gInitBoard[][8] = {
 //Flip X and Y because of definition above
 Board::Board()
 {
+	playstate = true;
 	//initialize variables
 	mIsWhite = true;
 	blackCheck = false;
@@ -34,7 +35,13 @@ Board::Board()
 	wlRmoved = false;
 	brRmoved = false;
 	blRmoved = false;
-	pawnMovedTwo = false;
+	generic.turn = -1;
+	generic.movedTwo = false;
+	generic.dst.x = 9;
+	generic.dst.y = 9;
+	generic.doit = false;
+	turnNumber = 0;
+
 
 
 	//initialize board
@@ -477,7 +484,10 @@ Board::isLegal(char i_piece,  Location &i_src, Location &i_dst) {
 					if (mBoard[i_src.x][i_src.y + 1] != ' ') {
 						return false;
 					}
-					pawnMovedTwo = true;
+					generic.movedTwo = true;
+					generic.turn = turnNumber;
+					generic.dst.x = i_dst.x;
+					generic.dst.y = i_dst.y;
 					return true;
 				}
 				if (diff == 1)
@@ -492,7 +502,12 @@ Board::isLegal(char i_piece,  Location &i_src, Location &i_dst) {
 				{
 					return false;
 				}
-			} 
+			}
+			else if (isBlack(mBoard[i_dst.x][i_dst.y - 1]) && mBoard[i_dst.x][i_dst.y - 1] != ' ' && turnNumber - generic.turn == 1 && generic.dst.x == i_dst.x && generic.dst.y == i_dst.y - 1 && mBoard[i_dst.x][i_dst.y] == ' ') {
+				//mBoard[i_dst.x][i_dst.y - 1] = ' ';
+				generic.doit = true;
+				return true;
+			}
 			else
 			{
 				return  false;
@@ -515,7 +530,10 @@ Board::isLegal(char i_piece,  Location &i_src, Location &i_dst) {
 					if (mBoard[i_src.x][i_src.y - 1] != ' ') {
 						return false;
 					}
-					pawnMovedTwo = true;
+					generic.movedTwo = true;
+					generic.turn = turnNumber;
+					generic.dst.x = i_dst.x;
+					generic.dst.y = i_dst.y;
 					return true;
 				}
 
@@ -531,6 +549,11 @@ Board::isLegal(char i_piece,  Location &i_src, Location &i_dst) {
 				{
 					return false;
 				}
+			}
+			else if (isWhite(mBoard[i_dst.x][i_dst.y + 1]) && mBoard[i_dst.x][i_dst.y + 1] != ' ' && turnNumber - generic.turn == 1 && generic.dst.x == i_dst.x && generic.dst.y == i_dst.y + 1 && mBoard[i_dst.x][i_dst.y] == ' ') {
+				//mBoard[i_dst.x][i_dst.y + 1] = ' ';
+				generic.doit = true;
+				return true;
 			}
 			else
 			{
@@ -626,7 +649,6 @@ Board::toGrid(char x)
 	return -1;
 }
 
-
 bool
 Board::move(const std::string &i_move) 
 {
@@ -645,9 +667,23 @@ Board::move(const std::string &i_move)
 				mBoardToSaveBoard(0);
 				if (search(mIsWhite ? tolower(i_move[0]) : toupper(i_move[0]), src, dst))
 				{
-					mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
-					mBoard[src.x][src.y] = ' ';
-
+					if (generic.doit == true)
+					{
+						int passantMod;
+						if (mIsWhite) {
+							passantMod = -1;
+						}
+						else {
+							passantMod = 1;
+						}
+						mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+						mBoard[src.x][src.y] = ' ';
+						mBoard[dst.x][dst.y + passantMod] = ' ';
+					}
+					else {
+						mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+						mBoard[src.x][src.y] = ' ';
+					}
 					if (mIsWhite) {
 						if (whiteInCheck(0)) {
 							cout << "\n\nWe already told you... Your king is in check\n\n Try AGAIN\n\n";
@@ -680,9 +716,23 @@ Board::move(const std::string &i_move)
 		{
 			if (search(mIsWhite ? 'p' : 'P', src, dst))
 			{
-				mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
-				mBoard[src.x][src.y] = ' ';
-
+				if (generic.doit == true)
+				{
+					int passantMod;
+					if (mIsWhite) {
+						passantMod = -1;
+					}
+					else {
+						passantMod = 1;
+					}
+					mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+					mBoard[src.x][src.y] = ' ';
+					mBoard[dst.x][dst.y + passantMod] = ' ';
+				}
+				else {
+					mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+					mBoard[src.x][src.y] = ' ';
+				}
 			}
 			else {
 				cout << "\n\nYou made an illegal move, or this program sucks.\n\n";
@@ -846,9 +896,7 @@ Board::move(const std::string &i_move)
 	}
 	else if (i_move == "quit")
 	{
-		if (mIsWhite) {
-
-		}
+	abort();
 		return false;
 	}
 	else if (i_move.length() == 3) 
@@ -862,10 +910,25 @@ Board::move(const std::string &i_move)
 		{
 			if (search(mIsWhite ? tolower(i_move[0]) : toupper(i_move[0]), src, dst)) 
 			{
+				if(generic.doit == true)
+				{
+					int passantMod;
+					if (mIsWhite) {
+						passantMod = -1;
+					}
+					else {
+						passantMod = 1;
+					}
+					mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+					mBoard[src.x][src.y] = ' ';
+					mBoard[dst.x][dst.y + passantMod] = ' ';
+				}
+				else 
+				{
 
-				mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
-				mBoard[src.x][src.y] = ' ';
-
+					mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+					mBoard[src.x][src.y] = ' ';
+				}
 				if (mIsWhite) {
 					if (whiteInCheck(0)) {
 						cout << "\n\nWe already told you... Your king is in check\n\n Try AGAIN\n\n";
@@ -893,9 +956,23 @@ Board::move(const std::string &i_move)
 		} 
 		else if (search(mIsWhite ? tolower(i_move[0]) : toupper(i_move[0]), src, dst)) 
 		{
-			mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
-			mBoard[src.x][src.y] = ' ';
-
+			if (generic.doit == true)
+			{
+				int passantMod;
+				if (mIsWhite) {
+					passantMod = -1;
+				}
+				else {
+					passantMod = 1;
+				}
+				mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+				mBoard[src.x][src.y] = ' ';
+				mBoard[dst.x][dst.y + passantMod] = ' ';
+			}
+			else {
+				mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+				mBoard[src.x][src.y] = ' ';
+			}
 
 
 			
@@ -945,10 +1022,24 @@ Board::move(const std::string &i_move)
 		char piecetoMove = mBoard[src.x][src.y];
 
 		if (((whiteCheck == true && mIsWhite) || (blackCheck == true && !mIsWhite))) {
-			
-			mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
-			mBoard[src.x][src.y] = ' ';
-
+			if (generic.doit == true)
+			{
+				int passantMod;
+				if (mIsWhite) {
+					passantMod = -1;
+				}
+				else {
+					passantMod = 1;
+				}
+				mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+				mBoard[src.x][src.y] = ' ';
+				mBoard[dst.x][dst.y + passantMod] = ' ';
+			}
+			else 
+			{
+				mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+				mBoard[src.x][src.y] = ' ';
+			}
 			if (mIsWhite) {
 				if (whiteInCheck(0)) {
 					cout << "\n\nWe already told you... Your king is in check\n\n Try AGAIN\n\n";
@@ -969,10 +1060,24 @@ Board::move(const std::string &i_move)
 
 			if (isLegal(piecetoMove, src, dst))
 			{
-
-				mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
-				mBoard[src.x][src.y] = ' ';
-
+				if (generic.doit == true)
+				{
+					int passantMod;
+					if (mIsWhite) {
+						passantMod = -1;
+					}
+					else {
+						passantMod = 1;
+					}
+					mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+					mBoard[src.x][src.y] = ' ';
+					mBoard[dst.x][dst.y + passantMod] = ' ';
+				}
+				else 
+				{
+					mBoard[dst.x][dst.y] = mBoard[src.x][src.y];
+					mBoard[src.x][src.y] = ' ';
+				}
 
 			}
 			else {
@@ -1019,13 +1124,527 @@ Board::move(const std::string &i_move)
 	}
 	mIsWhite = !mIsWhite;
 
-	
+	{
+		if (turnNumber - generic.turn == 1 && turnNumber != 0) {
+			generic.turn = -1;
+			generic.movedTwo = false;
+			generic.dst.x = 9;
+			generic.dst.y = 9;
+			generic.doit = false;
+		}
+
+
+	}
+
+
+
+	turnNumber++;
 	return true;
 
 
 }
 
+bool
+Board::isCheckMate() {
+	
 
+
+	mIsWhite = !mIsWhite;
+
+	
+		for (int w = 0; w < 8; w++)
+		{
+			for (int z = 0; z < 8; z++)
+			{
+				checkMateSaveBoard[w][z] = mBoard[w][z];
+			}
+		}
+
+	Location kingloc;
+	kingloc.x = -1;
+	kingloc.y = -1;
+	if (mIsWhite) {
+		for (int g = 0; g < 8; g++) {
+			for (int z = 0; z < 8; z++) {
+				if (mBoard[z][g] == 'k') {
+					kingloc.x = z;
+					kingloc.y = g;
+					break;
+				}
+			}
+			if (kingloc.x != -1 && kingloc.y != -1) {
+				break;
+			}
+		}
+	}
+	else {
+		for (int g = 0; g < 8; g++) {
+			for (int z = 0; z < 8; z++) {
+				if (mBoard[z][g] == 'K') {
+					kingloc.x = z;
+					kingloc.y = g;
+					break;
+				}
+			}
+			if (kingloc.x != -1 && kingloc.y != -1) {
+				break;
+			}
+		}
+	}
+	if((mIsWhite && whiteInCheck(0)) || (!mIsWhite && blackInCheck()))
+	if (kingloc.x == 0 && kingloc.y == 0)
+	{
+		int xmod, ymod;
+		xmod = 0;
+		ymod = 1;
+		for (int i = 0; i < 3; i++) 
+		{
+			if (mBoard[kingloc.x + xmod][kingloc.y + ymod] == ' ' || isWhite(mBoard[kingloc.x][kingloc.y]) != isWhite(mBoard[kingloc.x + xmod][kingloc.y + ymod]))
+			{
+				char erasedPiece;
+					if (mIsWhite)
+					{
+						erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+							mBoard[kingloc.x][kingloc.y] = ' ';
+							mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
+							if (!whiteInCheck(0))
+							{
+								mIsWhite = !mIsWhite;
+									return false;
+							}
+							else
+							{
+								mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+								mBoard[kingloc.x][kingloc.y] = 'k';
+							}
+					}
+					else
+					{
+						erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+						mBoard[kingloc.x][kingloc.y] = ' ';
+						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
+						if (!whiteInCheck(1))
+						{
+							mIsWhite = !mIsWhite;
+							return false;
+						}
+						else
+						{
+							mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+							mBoard[kingloc.x][kingloc.y] = 'K';
+						}
+					}
+
+
+			}
+			if (i == 0) {
+				xmod = 1;
+			}
+			if (i == 1) {
+				ymod = 0;
+			}
+		}
+	}
+	else if (kingloc.x == 0 && kingloc.y == 7)
+	{
+		int xmod, ymod;
+		xmod = 0;
+		ymod = -1;
+		for (int i = 0; i < 3; i++)
+		{
+			if (mBoard[kingloc.x + xmod][kingloc.y + ymod] == ' ' || isWhite(mBoard[kingloc.x][kingloc.y]) != isWhite(mBoard[kingloc.x + xmod][kingloc.y + ymod]))
+			{
+				char erasedPiece;
+					if (mIsWhite)
+					{
+						erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+							mBoard[kingloc.x][kingloc.y] = ' ';
+							mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
+							if (!whiteInCheck(0))
+							{
+								mIsWhite = !mIsWhite;
+									return false;
+							}
+							else
+							{
+								mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+								mBoard[kingloc.x][kingloc.y] = 'k';
+							}
+					}
+					else
+					{
+						erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+						mBoard[kingloc.x][kingloc.y] = ' ';
+						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
+						if (!whiteInCheck(1))
+						{
+							mIsWhite = !mIsWhite;
+							return false;
+						}
+						else
+						{
+							mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+							mBoard[kingloc.x][kingloc.y] = 'K';
+						}
+					}
+
+
+			}
+			if (i == 0) {
+				xmod = 1;
+			}
+			if (i == 1) {
+				ymod = 0;
+			}
+		}
+	}
+	else if (kingloc.x == 7 && kingloc.y == 0)
+	{
+	int xmod, ymod;
+	xmod = 0;
+	ymod = 1;
+	for (int i = 0; i < 3; i++)
+	{
+		if (mBoard[kingloc.x + xmod][kingloc.y + ymod] == ' ' || isWhite(mBoard[kingloc.x][kingloc.y]) != isWhite(mBoard[kingloc.x + xmod][kingloc.y + ymod]))
+		{
+			char erasedPiece;
+				if (mIsWhite)
+				{
+					erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+						mBoard[kingloc.x][kingloc.y] = ' ';
+						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
+						if (!whiteInCheck(0))
+						{
+							mIsWhite = !mIsWhite;
+								return false;
+						}
+						else
+						{
+							mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+							mBoard[kingloc.x][kingloc.y] = 'k';
+						}
+				}
+				else
+				{
+					erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+					mBoard[kingloc.x][kingloc.y] = ' ';
+					mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
+					if (!whiteInCheck(1))
+					{
+						mIsWhite = !mIsWhite;
+						return false;
+					}
+					else
+					{
+						mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+						mBoard[kingloc.x][kingloc.y] = 'K';
+					}
+				}
+
+
+		}
+		if (i == 0) {
+			xmod = -1;
+		}
+		if (i == 1) {
+			ymod = 0;
+		}
+	}
+	}
+	else if (kingloc.x == 7 && kingloc.y == 7)
+	{
+	int xmod, ymod;
+	xmod = 7;
+	ymod = -1;
+	for (int i = 0; i < 3; i++)
+	{
+		if (mBoard[kingloc.x + xmod][kingloc.y + ymod] == ' ' || isWhite(mBoard[kingloc.x][kingloc.y]) != isWhite(mBoard[kingloc.x + xmod][kingloc.y + ymod]))
+		{
+			char erasedPiece;
+				if (mIsWhite)
+				{
+					erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+						mBoard[kingloc.x][kingloc.y] = ' ';
+						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
+						if (!whiteInCheck(0))
+						{
+							mIsWhite = !mIsWhite;
+							return false;
+						}
+						else
+						{
+							mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+							mBoard[kingloc.x][kingloc.y] = 'k';
+						}
+				}
+				else
+				{
+					erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+					mBoard[kingloc.x][kingloc.y] = ' ';
+					mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
+					if (!whiteInCheck(1))
+					{
+						mIsWhite = !mIsWhite;
+						return false;
+					}
+					else
+					{
+						mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+						mBoard[kingloc.x][kingloc.y] = 'K';
+					}
+				}
+
+
+		}
+		if (i == 0) {
+			xmod = -1;
+		}
+		if (i == 1) {
+			ymod = 0;
+		}
+	}
+	}
+	else if (kingloc.x == 0)
+	{
+	int xmod, ymod;
+	xmod = 0;
+	ymod = -1;
+	for (int i = 0; i < 5; i++)
+	{
+		if (mBoard[kingloc.x + xmod][kingloc.y + ymod] == ' ' || isWhite(mBoard[kingloc.x][kingloc.y]) != isWhite(mBoard[kingloc.x + xmod][kingloc.y + ymod]))
+		{
+			char erasedPiece;
+				if (mIsWhite)
+				{
+					erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+						mBoard[kingloc.x][kingloc.y] = ' ';
+						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
+						if (!whiteInCheck(0))
+						{
+							mIsWhite = !mIsWhite;
+								return false;
+						}
+						else
+						{
+							mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+							mBoard[kingloc.x][kingloc.y] = 'k';
+						}
+				}
+				else
+				{
+					erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+					mBoard[kingloc.x][kingloc.y] = ' ';
+					mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
+					if (!whiteInCheck(1))
+					{
+						mIsWhite = !mIsWhite;
+						return false;
+					}
+					else
+					{
+						mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+						mBoard[kingloc.x][kingloc.y] = 'K';
+					}
+				}
+
+
+		}
+		if (i == 0) {
+			xmod = 1;
+		}
+		if (i == 1) {
+			ymod = 0;
+		}
+		if (i == 2) {
+			ymod = 1;
+		}
+		if (i == 3) {
+			xmod = 0;
+		}
+	}
+	}
+	else if (kingloc.x == 7)
+	{
+	int xmod, ymod;
+	xmod = 0;
+	ymod = -1;
+	for (int i = 0; i < 5; i++)
+	{
+		if (mBoard[kingloc.x + xmod][kingloc.y + ymod] == ' ' || isWhite(mBoard[kingloc.x][kingloc.y]) != isWhite(mBoard[kingloc.x + xmod][kingloc.y + ymod]))
+		{
+			char erasedPiece;
+				if (mIsWhite)
+				{
+					erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+						mBoard[kingloc.x][kingloc.y] = ' ';
+						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
+						if (!whiteInCheck(0))
+						{
+							mIsWhite = !mIsWhite;
+								return false;
+						}
+						else
+						{
+							mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+							mBoard[kingloc.x][kingloc.y] = 'k';
+						}
+				}
+				else
+				{
+					erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+					mBoard[kingloc.x][kingloc.y] = ' ';
+					mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
+					if (!whiteInCheck(1))
+					{
+						mIsWhite = !mIsWhite;
+						return false;
+					}
+					else
+					{
+						mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+						mBoard[kingloc.x][kingloc.y] = 'K';
+					}
+				}
+
+
+		}
+		if (i == 0) {
+			xmod = -1;
+		}
+		if (i == 1) {
+			ymod = 0;
+		}
+		if (i == 2) {
+			ymod = 1;
+		}
+		if (i == 3) {
+			xmod = 0;
+		}
+	}
+	}
+	else if (kingloc.y == 0)
+	{
+	int xmod, ymod;
+	xmod = -1;
+	ymod = 0;
+	for (int i = 0; i < 5; i++)
+	{
+		if (mBoard[kingloc.x + xmod][kingloc.y + ymod] == ' ' || isWhite(mBoard[kingloc.x][kingloc.y]) != isWhite(mBoard[kingloc.x + xmod][kingloc.y + ymod]))
+		{
+			char erasedPiece;
+				if (mIsWhite)
+				{
+					erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+						mBoard[kingloc.x][kingloc.y] = ' ';
+						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
+						if (!whiteInCheck(0))
+						{
+							mIsWhite = !mIsWhite;
+								return false;
+						}
+						else
+						{
+							mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+							mBoard[kingloc.x][kingloc.y] = 'k';
+						}
+				}
+				else
+				{
+					erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+					mBoard[kingloc.x][kingloc.y] = ' ';
+					mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
+					if (!whiteInCheck(1))
+					{
+						mIsWhite = !mIsWhite;
+						return false;
+					}
+					else
+					{
+						mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+						mBoard[kingloc.x][kingloc.y] = 'K';
+					}
+				}
+
+
+		}
+		if (i == 0) {
+			ymod = 1;
+		}
+		if (i == 1) {
+			xmod = 0;
+		}
+		if (i == 2) {
+			xmod = 1;
+		}
+		if (i == 3) {
+			ymod = 0;
+		}
+	}
+	}
+	else if (kingloc.y == 7)
+	{
+	int xmod, ymod;
+	xmod = -1;
+	ymod = 0;
+	for (int i = 0; i < 5; i++)
+	{
+		if (mBoard[kingloc.x + xmod][kingloc.y + ymod] == ' ' || isWhite(mBoard[kingloc.x][kingloc.y]) != isWhite(mBoard[kingloc.x + xmod][kingloc.y + ymod]))
+		{
+			char erasedPiece;
+				if (mIsWhite)
+				{
+					erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+						mBoard[kingloc.x][kingloc.y] = ' ';
+						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
+						if (!whiteInCheck(0))
+						{
+							mIsWhite = !mIsWhite;
+								return false;
+						}
+						else
+						{
+							mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+							mBoard[kingloc.x][kingloc.y] = 'k';
+						}
+				}
+				else
+				{
+					erasedPiece = mBoard[kingloc.x + xmod][kingloc.y + ymod];
+					mBoard[kingloc.x][kingloc.y] = ' ';
+					mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
+					if (!whiteInCheck(1))
+					{
+						mIsWhite = !mIsWhite;
+						return false;
+					}
+					else
+					{
+						mBoard[kingloc.x + xmod][kingloc.y + ymod] = erasedPiece;
+						mBoard[kingloc.x][kingloc.y] = 'K';
+					}
+				}
+
+
+		}
+		if (i == 0) {
+			ymod = -1;
+		}
+		if (i == 1) {
+			xmod = 0;
+		}
+		if (i == 2) {
+			xmod = 1;
+		}
+		if (i == 3) {
+			ymod = 0;
+		}
+	}
+	}
+	//dont remove this. Last line before quitting;
+	mIsWhite = !mIsWhite;
+	playstate = false;
+	return true;
+}
 
 
 void 

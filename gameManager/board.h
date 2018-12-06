@@ -8,6 +8,13 @@ typedef struct {
 	int x, y;
 } Location;
 
+typedef struct {
+	bool movedTwo;
+	Location dst;
+	int turn;
+	bool doit;
+} EnPassantTracker;
+
 
 class Board
 {
@@ -22,8 +29,8 @@ public:
 	bool move(const std::string &i_move);
 	bool   isWhiteMove() { return mIsWhite; }
 	void	print();
-	bool playing() { return true; }
-
+	bool playing() { return playstate; }
+	bool isCheckMate();
 
 private:
 	bool whiteInCheck(int x);
@@ -47,19 +54,19 @@ private:
 	bool   isRook(char i_piece) { return tolower(i_piece) == 'r'; }
 	bool   isQueen(char i_piece) { return tolower(i_piece) == 'q'; }
 	bool   isKing(char i_piece) { return tolower(i_piece) == 'k'; }
-
+	
 
 
 private:
-	
+	EnPassantTracker generic;
 	bool search(char i_piece, Location &i_dst, Location &o_src);
 	char  mBoard[8][8];
 	char SaveBoard[8][8];
-	
+	char checkMateSaveBoard[8][8];
+	int turnNumber;
 	bool blackCheck;
 	bool whiteCheck;
 	bool mIsWhite;
 	bool wKmoved, bKmoved, wrRmoved, wlRmoved, brRmoved, blRmoved;
-	bool pawnMovedTwo;
-
+	bool playstate;
 };

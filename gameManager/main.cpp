@@ -35,8 +35,10 @@ main(int argc, char **argv)
 		cin >> move;
 
 		board->move(move);
-
+		bool x = board->isCheckMate();
 		board->print();
-
+		if (x == true) {
+			cout << "\n\nCHECKMATE!!!!!!!!!!!\n\n";
+		}
 	}
 }
