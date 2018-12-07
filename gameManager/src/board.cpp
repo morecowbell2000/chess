@@ -6,10 +6,10 @@
 
 using namespace std;
 char gInitBoard[][8] = {
-							{ 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r' },
-							{ 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' },
-							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
-							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+							{ 'r', 'n', 'b', ' ', 'k', ' ', 'n', 'r' },
+							{ 'p', 'p', 'p', 'p', ' ', 'p', 'p', 'p' },
+							{ ' ', ' ', ' ', ' ', 'p', 'q', ' ', ' ' },
+							{ ' ', ' ', 'b', ' ', ' ', ' ', ' ', ' ' },
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
 							{ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
 							{ 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P' },
@@ -250,7 +250,7 @@ Board::isLegalKing(char i_piece, Location &i_src, Location &i_dst) {
 	else 
 	{
 		if (isLegalRook(i_piece, i_src, i_dst) == true || isLegalBishop(i_piece, i_src, i_dst) == true) {
-			if (!((0 <= abs(i_src.x - i_dst.x)) < 2) || !((0 <= abs(i_src.y - i_dst.y)) < 2)) {
+			if (!((0 <= abs(i_src.x - i_dst.x) && abs(i_src.x - i_dst.x) < 2)) || !((0 <= abs(i_src.y - i_dst.y) && abs(i_src.y - i_dst.y) < 2))) {
 				return false;
 			}
 			else
@@ -377,7 +377,17 @@ Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
 	}
 	else
 	{
-		if (abs((i_dst.x - i_src.x) / (i_dst.y - i_src.y)) != 1) {
+        if(i_dst.y - i_src.y == 0)
+        {
+            if(i_dst.x - i_src.x != 0)
+            {
+                return false;
+            }
+        }
+        else
+        {
+		if (abs((i_dst.x - i_src.x) / (i_dst.y - i_src.y)) != 1) 
+		{
 			return false;
 		}
 		else
@@ -451,6 +461,7 @@ Board::isLegalBishop(char i_piece, Location &i_src, Location &i_dst) {
 				}
 			return true;
 		}
+	}
 	}
 
 
@@ -1144,12 +1155,23 @@ Board::move(const std::string &i_move)
 
 }
 
+
+void
+Board::reload() {
+    for (int w = 0; w < 8; w++)
+    {
+        for (int z = 0; z < 8; z++)
+        {
+            mBoard[w][z] = checkMateSaveBoard[w][z];
+        }
+    }
+}
+
+
 bool
 Board::isCheckMate() {
 	
 
-
-	mIsWhite = !mIsWhite;
 
 	
 		for (int w = 0; w < 8; w++)
@@ -1191,7 +1213,7 @@ Board::isCheckMate() {
 			}
 		}
 	}
-	if((mIsWhite && whiteInCheck(0)) || (!mIsWhite && blackInCheck()))
+    {
 	if (kingloc.x == 0 && kingloc.y == 0)
 	{
 		int xmod, ymod;
@@ -1209,8 +1231,8 @@ Board::isCheckMate() {
 							mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
 							if (!whiteInCheck(0))
 							{
-								mIsWhite = !mIsWhite;
-									return false;
+                                reload();
+                                return false;
 							}
 							else
 							{
@@ -1225,7 +1247,7 @@ Board::isCheckMate() {
 						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
 						if (!whiteInCheck(1))
 						{
-							mIsWhite = !mIsWhite;
+                            reload();
 							return false;
 						}
 						else
@@ -1262,8 +1284,8 @@ Board::isCheckMate() {
 							mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
 							if (!whiteInCheck(0))
 							{
-								mIsWhite = !mIsWhite;
-									return false;
+                                reload();
+                                return false;
 							}
 							else
 							{
@@ -1278,8 +1300,8 @@ Board::isCheckMate() {
 						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
 						if (!whiteInCheck(1))
 						{
-							mIsWhite = !mIsWhite;
-							return false;
+                            reload();
+                            return false;
 						}
 						else
 						{
@@ -1315,8 +1337,8 @@ Board::isCheckMate() {
 						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
 						if (!whiteInCheck(0))
 						{
-							mIsWhite = !mIsWhite;
-								return false;
+                            reload();
+                            return false;
 						}
 						else
 						{
@@ -1331,8 +1353,8 @@ Board::isCheckMate() {
 					mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
 					if (!whiteInCheck(1))
 					{
-						mIsWhite = !mIsWhite;
-						return false;
+                        reload();
+                        return false;
 					}
 					else
 					{
@@ -1368,8 +1390,8 @@ Board::isCheckMate() {
 						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
 						if (!whiteInCheck(0))
 						{
-							mIsWhite = !mIsWhite;
-							return false;
+                            reload();
+                            return false;
 						}
 						else
 						{
@@ -1385,7 +1407,8 @@ Board::isCheckMate() {
 					if (!whiteInCheck(1))
 					{
 						mIsWhite = !mIsWhite;
-						return false;
+                        reload();
+                        return false;
 					}
 					else
 					{
@@ -1421,8 +1444,8 @@ Board::isCheckMate() {
 						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
 						if (!whiteInCheck(0))
 						{
-							mIsWhite = !mIsWhite;
-								return false;
+                            reload();
+                            return false;
 						}
 						else
 						{
@@ -1437,7 +1460,7 @@ Board::isCheckMate() {
 					mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
 					if (!whiteInCheck(1))
 					{
-						mIsWhite = !mIsWhite;
+                        reload();
 						return false;
 					}
 					else
@@ -1480,7 +1503,7 @@ Board::isCheckMate() {
 						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
 						if (!whiteInCheck(0))
 						{
-							mIsWhite = !mIsWhite;
+                            reload();
 								return false;
 						}
 						else
@@ -1496,7 +1519,7 @@ Board::isCheckMate() {
 					mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
 					if (!whiteInCheck(1))
 					{
-						mIsWhite = !mIsWhite;
+                        reload();
 						return false;
 					}
 					else
@@ -1539,8 +1562,8 @@ Board::isCheckMate() {
 						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
 						if (!whiteInCheck(0))
 						{
-							mIsWhite = !mIsWhite;
-								return false;
+                            reload();
+                            return false;
 						}
 						else
 						{
@@ -1555,7 +1578,7 @@ Board::isCheckMate() {
 					mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
 					if (!whiteInCheck(1))
 					{
-						mIsWhite = !mIsWhite;
+                        reload();
 						return false;
 					}
 					else
@@ -1598,8 +1621,8 @@ Board::isCheckMate() {
 						mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'k';
 						if (!whiteInCheck(0))
 						{
-							mIsWhite = !mIsWhite;
-								return false;
+                            reload();
+                            return false;
 						}
 						else
 						{
@@ -1614,7 +1637,7 @@ Board::isCheckMate() {
 					mBoard[kingloc.x + xmod][kingloc.y + ymod] = 'K';
 					if (!whiteInCheck(1))
 					{
-						mIsWhite = !mIsWhite;
+                        reload();
 						return false;
 					}
 					else
@@ -1640,10 +1663,21 @@ Board::isCheckMate() {
 		}
 	}
 	}
+    }
+    
+    if((mIsWhite && whiteInCheck(0)) || (!mIsWhite && blackInCheck()))
+    {
+        
+    
 	//dont remove this. Last line before quitting;
-	mIsWhite = !mIsWhite;
 	playstate = false;
 	return true;
+    }
+    else
+    {
+        reload();
+        return false;
+    }
 }
 
 

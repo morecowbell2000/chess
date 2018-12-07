@@ -54,7 +54,7 @@ private:
 	bool   isRook(char i_piece) { return tolower(i_piece) == 'r'; }
 	bool   isQueen(char i_piece) { return tolower(i_piece) == 'q'; }
 	bool   isKing(char i_piece) { return tolower(i_piece) == 'k'; }
-	
+	void reload();
 
 
 private:

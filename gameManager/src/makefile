@@ -12,8 +12,8 @@ CFLAGS = -Wall -g -pipe
 
 # define any directories containing header files other than /usr/include
 #
-INCLUDES = -I../chess
-#-I../include
+INCLUDES = -I../include
+#-I../chess
 
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify
