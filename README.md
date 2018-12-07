@@ -2,4 +2,4 @@
 Chess Program
 
 
-![alt text](chess/gameManager/fail.JPG)
+![alt text](https://raw.githubusercontent.com/morecowbell2000/chess/lite/gameManager/fail.JPG)
